@@ -4,5 +4,6 @@ module.exports = {
   transform: {
     "^.+.tsx?$": ["ts-jest", {}],
   },
+  setupFiles: ["./jest.setup.ts"],
   resetModules: true, // ⬅️ force Jest à recharger les modules
 };

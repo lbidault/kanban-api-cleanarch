@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "npx nodemon src/index.ts",
+    "dev": "npx prisma db push && npx nodemon src/index.ts",
     "test:prepare": "dotenv -e .env.test -- npx prisma db push",
     "test": "npm run test:prepare && dotenv -e .env.test -- jest --runInBand",
     "test:app": "npm run test:prepare && dotenv -e .env.test -- jest app/ --runInBand",
