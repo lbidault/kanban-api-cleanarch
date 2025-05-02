@@ -54,4 +54,60 @@ describe("Integration - Prisma Board Repository", function () {
     const originalNames = board.props.columns.map((c) => c.props.name).sort();
     expect(columnNames).toEqual(originalNames);
   });
+
+  it("should find a board by id", async () => {
+    await prisma.board.create({
+      data: {
+        id: board.props.id,
+        name: board.props.name,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+    const savedBoard = await boardRepository.findById(board.props.id);
+
+    expect(savedBoard).not.toBeNull();
+    expect(savedBoard!.props.name).toBe(board.props.name);
+  });
+
+  it("should find all boards", async () => {
+    await prisma.board.create({
+      data: {
+        id: board.props.id,
+        name: board.props.name,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+    const boards = await boardRepository.findAll();
+
+    expect(boards.length).toBe(1);
+    expect(boards[0].props.name).toBe(board.props.name);
+  });
+
+  it("should delete a board", async () => {
+    await prisma.board.create({
+      data: {
+        id: board.props.id,
+        name: board.props.name,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    const savedBoard = await prisma.board.findUnique({
+      where: { id: board.props.id },
+      include: { columns: true },
+    });
+
+    expect(savedBoard).not.toBeNull();
+
+    await boardRepository.delete(board.props.id);
+
+    const deletedBoard = await prisma.board.findUnique({
+      where: { id: board.props.id },
+    });
+
+    expect(deletedBoard).toBeNull();
+  });
 });

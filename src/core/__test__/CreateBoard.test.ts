@@ -70,6 +70,6 @@ describe("Unit - Create Board", () => {
     };
 
     const fail = () => createBoard.execute(input);
-    await expect(() => fail()).rejects.toThrow(BoardErrors.InvalidNameError);
+    await expect(() => fail()).rejects.toThrow(BoardErrors.InvalidName);
   });
 });

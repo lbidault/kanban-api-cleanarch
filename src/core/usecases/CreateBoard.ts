@@ -21,7 +21,7 @@ export class CreateBoard implements UseCase<CreateBoardInput, Board> {
     const { name, columns } = input;
 
     if (name.length < 3) {
-      throw new BoardErrors.InvalidNameError();
+      throw new BoardErrors.InvalidName();
     }
 
     const existingBoard = await this.boardRepository.findByName(name);

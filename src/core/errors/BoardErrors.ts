@@ -13,7 +13,7 @@ export namespace BoardErrors {
     }
   }
 
-  export class InvalidNameError extends DomainErrors {
+  export class InvalidName extends DomainErrors {
     constructor() {
       super("BOARD_INVALID_NAME");
     }

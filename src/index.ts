@@ -1,13 +1,18 @@
 import dotenv from "dotenv";
-dotenv.config();
+if (process.env.NODE_ENV === "test") {
+  dotenv.config({ path: ".env.test" });
+} else {
+  dotenv.config();
+}
+
 import express from "express";
 import { boardRouter } from "./app/routes/board";
-import prisma from "./client";
+import cors from "cors";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
-
 app.use("/boards", boardRouter);
 
 // app.post(`/signup`, async (req, res) => {
@@ -165,7 +170,7 @@ app.use("/boards", boardRouter);
 // })
 
 if (process.env.NODE_ENV !== "test") {
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 4000;
   app.listen(port, () => {
     console.log(`🚀 Server ready at: http://localhost:${port}`);
   });
