@@ -43,7 +43,7 @@ boardRouter.post("/", async (req, res) => {
 boardRouter.get("/", async (req, res) => {
   try {
     const boards = await getBoardList.execute();
-    res.status(200).json(boards.map(boardApiShortResponseMapper.fromDomain));
+    res.status(200).json(boards.map(boardApiResponseMapper.fromDomain));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
