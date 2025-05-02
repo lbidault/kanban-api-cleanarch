@@ -1,14 +1,14 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import express from "express";
-import { withAccelerate } from "@prisma/extension-accelerate";
-import prisma from "./client";
 import dotenv from "dotenv";
-
 dotenv.config();
+import express from "express";
+import { boardRouter } from "./app/routes/board";
+import prisma from "./client";
 
-export const app = express();
+const app = express();
 
 app.use(express.json());
+
+app.use("/boards", boardRouter);
 
 // app.post(`/signup`, async (req, res) => {
 //   const { name, email, posts } = req.body;
