@@ -14,7 +14,6 @@ export class Subtask {
   static create(props: {
     id: string;
     title: string;
-    isCompleted: boolean;
   }) {
     return new Subtask({
       id: props.id,

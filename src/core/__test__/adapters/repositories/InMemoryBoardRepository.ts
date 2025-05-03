@@ -1,6 +1,5 @@
 import { BoardRepository } from "../../../repositories/BoardRepository";
 import { Board } from "../../../entities/Board";
-import { Column } from "../../../entities/Column";
 
 export class InMemoryBoardRepository implements BoardRepository {
   constructor(private readonly db: Map<string, Board>) {}
