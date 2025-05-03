@@ -43,6 +43,7 @@ describe("Unit - Create Task", () => {
         Subtask.create({ id: idGateway.generate(), title: "Todo 1" }),
         Subtask.create({ id: idGateway.generate(), title: "Todo 2" }),
       ],
+      columnId: idGateway.generate(),
     });
 
     board = Board.create({

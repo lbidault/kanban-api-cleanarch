@@ -6,6 +6,8 @@ export type TaskProperties = {
   description: string;
   status: string;
   subtasks: Subtask[];
+
+  columnId: string;
 };
 
 export class Task {
@@ -21,6 +23,8 @@ export class Task {
     description: string;
     status: string;
     subtasks: Subtask[];
+
+    columnId: string;
   }) {
     return new Task({
       id: props.id,
@@ -28,15 +32,19 @@ export class Task {
       description: props.description,
       status: props.status,
       subtasks: props.subtasks,
+      columnId: props.columnId,
     });
   }
 
-  update(props: { title?: string; description?: string }) {
+  update(props: { title?: string; description?: string; status?: string }) {
     if (props.title) {
       this.props.title = props.title;
     }
     if (props.description) {
       this.props.description = props.description;
+    }
+    if (props.status) {
+      this.props.status = props.status;
     }
   }
 

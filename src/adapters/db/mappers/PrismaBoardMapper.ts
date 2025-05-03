@@ -36,32 +36,36 @@ export class PrismaBoardMapper implements Mapper<BoardModel, Board> {
     };
   }
 
-  toDomain(boardModel: BoardModel): Board {
+  toDomain(raw: BoardModel): Board {
     return new Board({
-      id: boardModel.id,
-      name: boardModel.name,
-      createdAt: boardModel.createdAt,
-      updatedAt: boardModel.updatedAt,
-      columns: boardModel.columns.map((columnModel: ColumnModel) => 
-        new Column({
-          id: columnModel.id,
-          name: columnModel.name,
-          tasks: columnModel.tasks.map((taskModel: TaskModel) => 
-            new Task({
-              id: taskModel.id,
-              title: taskModel.title,
-              description: taskModel.description,
-              status: columnModel.name,
-              subtasks: taskModel.subtasks.map((subtaskModel: SubtaskModel) => 
-                new Subtask({
-                  id: subtaskModel.id,
-                  title: subtaskModel.title,
-                  isCompleted: subtaskModel.isCompleted,
+      id: raw.id,
+      name: raw.name,
+      createdAt: raw.createdAt,
+      updatedAt: raw.updatedAt,
+      columns: raw.columns.map(
+        (columnModel: ColumnModel) =>
+          new Column({
+            id: columnModel.id,
+            name: columnModel.name,
+            tasks: columnModel.tasks.map(
+              (taskModel: TaskModel) =>
+                new Task({
+                  id: taskModel.id,
+                  title: taskModel.title,
+                  description: taskModel.description,
+                  status: columnModel.name,
+                  subtasks: taskModel.subtasks.map(
+                    (subtaskModel: SubtaskModel) =>
+                      new Subtask({
+                        id: subtaskModel.id,
+                        title: subtaskModel.title,
+                        isCompleted: subtaskModel.isCompleted,
+                      })
+                  ),
+                  columnId: columnModel.id,
                 })
-              ),
-            })
-          )
-        })
+            ),
+          })
       ),
     });
   }

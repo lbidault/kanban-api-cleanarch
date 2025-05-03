@@ -31,10 +31,10 @@ export class CreateTask implements UseCase<CreateTaskInput, Task> {
       throw new BoardErrors.NotFound();
     }
 
-    const existingStatus = existingBoard.props.columns.find(
+    const existingColumn = existingBoard.props.columns.find(
       (column) => column.props.name === status
     );
-    if (!existingStatus) {
+    if (!existingColumn) {
       throw new ColumnErrors.NotFound();
     }
 
@@ -58,6 +58,7 @@ export class CreateTask implements UseCase<CreateTaskInput, Task> {
           title: subName,
         })
       ),
+      columnId: existingColumn.props.id,
     });
 
     await this.taskRepository.create(task);
