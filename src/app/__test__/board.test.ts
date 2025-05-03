@@ -164,4 +164,48 @@ describe("API endpoints - /boards", function () {
       .get(`/boards/${board.props.id}/tasks/${task.props.id}`)
       .expect(404);
   });
+
+  it("PATCH /boards/:boardId/tasks/:taskId - should update task's subtasks", async () => {
+    const board = boardSamples[0];
+    await boardRepository.create(board);
+    const task = taskSamples[0];
+    await taskRepository.create(task);
+
+    await request(app)
+      .patch(`/boards/${board.props.id}/tasks/${task.props.id}`)
+      .send({
+        subtasks: [task.props.subtasks[0].props.id],
+      })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect((res) => {
+        expect(res.body.subtasks).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ isCompleted: true }),
+            expect.objectContaining({ isCompleted: false }),
+          ])
+        );
+      })
+      .expect(200);
+
+    await request(app)
+      .patch(`/boards/${board.props.id}/tasks/${task.props.id}`)
+      .send({
+        subtasks: [
+          task.props.subtasks[0].props.id,
+          task.props.subtasks[1].props.id,
+        ],
+      })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect((res) => {
+        expect(res.body.subtasks).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ isCompleted: false }),
+            expect.objectContaining({ isCompleted: true }),
+          ])
+        );
+      })
+      .expect(200);
+  });
 });

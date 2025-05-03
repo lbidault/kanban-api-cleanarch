@@ -7,60 +7,60 @@ import { BoardErrors } from "../errors/BoardErrors";
 import { BoardRepository } from "../repositories/BoardRepository";
 import { ColumnErrors } from "../errors/ColumnErrors";
 
-interface SubtaskInput {
-  id: string;
-  title: string;
-}
-
 export interface UpdateTaskInput {
   boardId: string;
   taskId: string;
-  subtasks: SubtaskInput[];
-  status: string;
+  subtasks: string[];
+  status?: string;
 }
 
 export class UpdateTask implements UseCase<UpdateTaskInput, Task> {
   constructor(
     private readonly boardRepository: BoardRepository,
-    private readonly taskRepository: TaskRepository,
+    private readonly taskRepository: TaskRepository
   ) {}
 
   async execute(input: UpdateTaskInput): Promise<Task> {
-    const { boardId, subtasks, status } = input;
+    const { boardId, taskId, subtasks, status } = input;
 
     const existingBoard = await this.boardRepository.findById(boardId);
     if (!existingBoard) {
       throw new BoardErrors.NotFound();
     }
 
-    const existingColumn = existingBoard.props.columns.find(
-      (column) => column.props.name === status
-    );
-    if (!existingColumn) {
-      throw new ColumnErrors.NotFound();
-    }
-
-    const existingTask = await this.taskRepository.findById(boardId);
+    const existingTask = await this.taskRepository.findById(taskId);
     if (!existingTask) {
       throw new TaskErrors.NotFound();
     }
 
-    subtasks.forEach((subtask) => {
+    // subtasks
+    subtasks.forEach((subtaskId) => {
       const existingSubtask = existingTask.props.subtasks.find(
-        (sub) => sub.props.id === subtask.id
+        (sub) => sub.props.id === subtaskId
       );
       if (!existingSubtask) {
         throw new SubtaskErrors.NotFound();
       }
-      existingSubtask.check();
+      existingSubtask.toggle();
     });
 
-    existingTask.update({ status });
+    // status
+    if (status) {
+      const existingColumn = existingBoard.props.columns.find(
+        (column) => column.props.name === status
+      );
+      if (!existingColumn) {
+        throw new ColumnErrors.NotFound();
+      }
+
+      existingTask.update({ status });
+      // TODO: Update column
+      console.warn("UpdateTask Implementation not complete : Update column");
+    }
+
 
     await this.taskRepository.update(existingTask);
 
-    // TODO: Update column
-    console.warn("UpdateTask Implementation not complete : Update column");
     return existingTask;
   }
 }

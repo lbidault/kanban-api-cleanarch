@@ -64,7 +64,29 @@ export class PrismaTaskRepository implements TaskRepository {
     throw new Error("Method not implemented.");
   }
   async update(task: Task): Promise<Task> {
-    throw new Error("Method not implemented.");
+    const taskModel: TaskModel = taskMapper.fromDomain(task);
+    const updatedTaskModel = await prisma.task.update({
+      where: { id: taskModel.id },
+      data: {
+        title: taskModel.title,
+        description: taskModel.description,
+        status: taskModel.status,
+        subtasks: {
+          updateMany: taskModel.subtasks.map((subtask) => ({
+            where: { id: subtask.id },
+            data: {
+              title: subtask.title,
+              isCompleted: subtask.isCompleted,
+            },
+          })),
+        },
+      },
+      include: {
+        subtasks: true,
+      },
+    });
+    const updatedTask = taskMapper.toDomain(updatedTaskModel);
+    return updatedTask;
   }
   async delete(id: string): Promise<void> {
     const task = await prisma.task.findUnique({

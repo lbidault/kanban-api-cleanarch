@@ -22,7 +22,7 @@ export class Subtask {
     });
   }
 
-  check() {
-    this.props.isCompleted = true;
+  toggle() {
+    this.props.isCompleted = !this.props.isCompleted;
   }
 }

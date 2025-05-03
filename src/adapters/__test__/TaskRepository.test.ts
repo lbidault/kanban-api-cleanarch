@@ -134,6 +134,37 @@ describe("Integration - Prisma Task Repository", function () {
   //   expect(Tasks[0].props.name).toBe(Task.props.name);
   // });
 
+  it("should update Subtasks", async () => {
+    await prisma.task.create({
+      data: {
+        id: task.props.id,
+        title: task.props.title,
+        description: task.props.description,
+        subtasks: {
+          create: task.props.subtasks.map((subtask) => ({
+            id: subtask.props.id,
+            title: subtask.props.title,
+            isCompleted: subtask.props.isCompleted,
+          })),
+        },
+        status: task.props.status,
+        columnId: task.props.columnId,
+      },
+    });
+
+    const subtask = task.props.subtasks[0];
+    expect(subtask.props.isCompleted).toBe(false);
+
+    subtask.toggle();
+    await taskRepository.update(task);
+
+    const savedSubask = await prisma.subtask.findUnique({
+      where: { id: subtask.props.id },
+    });
+    expect(savedSubask).not.toBeNull();
+    expect(savedSubask!.isCompleted).toBe(true);
+  });
+
   it("should delete a Task", async () => {
     await prisma.task.create({
       data: {
