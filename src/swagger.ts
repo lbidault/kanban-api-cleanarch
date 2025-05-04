@@ -15,7 +15,7 @@ const options = {
   },
   apis: [
     isProd
-      ? path.join(__dirname, "routes", "*.js") // dist/routes/*.js en prod
+      ? path.join(__dirname, "app", "routes", "*.js") // dist/routes/*.js en prod
       : path.join(__dirname, "app", "routes", "*.ts"), // app/routes/*.ts en dev
   ],
 };
