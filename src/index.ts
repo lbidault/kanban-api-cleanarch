@@ -10,7 +10,7 @@ import { setupSwagger } from "./swagger";
 const app = express();
 setupSwagger(app);
 
-app.use(cors());
+app.use(cors({ origin: process.env.FRONT_ORIGIN }));
 app.use(express.json());
 app.use("/boards", boardRouter);
 app.use("/tasks", taskRouter);
