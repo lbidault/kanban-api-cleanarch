@@ -1,8 +1,9 @@
-// swagger.ts
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
 import path from "path";
+
+const isProd = process.env.NODE_ENV === "production";
 
 const options = {
   definition: {
@@ -12,7 +13,11 @@ const options = {
       version: "1.0.0",
     },
   },
-  apis: [path.join(__dirname, "app", "routes", "*.ts")], // ✅ pointage clair
+  apis: [
+    isProd
+      ? path.join(__dirname, "routes", "*.js") // dist/routes/*.js en prod
+      : path.join(__dirname, "app", "routes", "*.ts"), // app/routes/*.ts en dev
+  ],
 };
 
 const specs = swaggerJsdoc(options);
