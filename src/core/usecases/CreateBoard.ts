@@ -5,7 +5,6 @@ import { BoardErrors } from "../errors/BoardErrors";
 import { IdGateway } from "../gateways/IdGateway";
 import { Column } from "../entities/Column";
 
-
 export interface CreateBoardInput {
   name: string;
   columns: string[];
@@ -29,12 +28,12 @@ export class CreateBoard implements UseCase<CreateBoardInput, Board> {
       throw new BoardErrors.NameAlreadyExists();
     }
 
-
+    const boardId = this.idGateway.generate();
     const board = Board.create({
-      id: this.idGateway.generate(),
+      id: boardId,
       name,
       columns: columns.map((columnName) =>
-        Column.create({ id: this.idGateway.generate(), name: columnName })
+        Column.create({ boardId, name: columnName })
       ),
     });
 

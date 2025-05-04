@@ -16,14 +16,15 @@ export class PrismaBoardMapper implements Mapper<BoardModel, Board> {
       createdAt: board.props.createdAt,
       updatedAt: board.props.updatedAt,
       columns: board.props.columns.map((column) => ({
-        id: column.props.id,
         boardId: board.props.id,
         name: column.props.name,
         tasks: column.props.tasks.map((task) => ({
           id: task.props.id,
-          columnId: column.props.id,
           title: task.props.title,
           description: task.props.description,
+          createdAt: task.props.createdAt,
+          updatedAt: task.props.updatedAt,
+          boardId: task.props.boardId,
           status: task.props.status,
           subtasks: task.props.subtasks.map((subtask) => ({
             id: subtask.props.id,
@@ -45,7 +46,7 @@ export class PrismaBoardMapper implements Mapper<BoardModel, Board> {
       columns: raw.columns.map(
         (columnModel: ColumnModel) =>
           new Column({
-            id: columnModel.id,
+            boardId: columnModel.boardId,
             name: columnModel.name,
             tasks: columnModel.tasks.map(
               (taskModel: TaskModel) =>
@@ -53,7 +54,10 @@ export class PrismaBoardMapper implements Mapper<BoardModel, Board> {
                   id: taskModel.id,
                   title: taskModel.title,
                   description: taskModel.description,
-                  status: columnModel.name,
+                  createdAt: taskModel.createdAt,
+                  updatedAt: taskModel.updatedAt,
+                  boardId: taskModel.boardId,
+                  status: taskModel.status,
                   subtasks: taskModel.subtasks.map(
                     (subtaskModel: SubtaskModel) =>
                       new Subtask({
@@ -62,7 +66,6 @@ export class PrismaBoardMapper implements Mapper<BoardModel, Board> {
                         isCompleted: subtaskModel.isCompleted,
                       })
                   ),
-                  columnId: columnModel.id,
                 })
             ),
           })

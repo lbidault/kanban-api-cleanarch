@@ -58,7 +58,7 @@ export class CreateTask implements UseCase<CreateTaskInput, Task> {
           title: subName,
         })
       ),
-      columnId: existingColumn.props.id,
+      boardId: existingBoard.props.id,
     });
 
     await this.taskRepository.create(task);

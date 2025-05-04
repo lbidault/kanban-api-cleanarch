@@ -15,6 +15,9 @@ export class PrismaTaskRepository implements TaskRepository {
         id: taskModel.id,
         title: taskModel.title,
         description: taskModel.description,
+        createdAt: taskModel.createdAt,
+        updatedAt: taskModel.updatedAt,
+        boardId: taskModel.boardId,
         status: taskModel.status,
         subtasks: {
           create: taskModel.subtasks.map((subtask) => ({
@@ -23,7 +26,6 @@ export class PrismaTaskRepository implements TaskRepository {
             isCompleted: subtask.isCompleted,
           })),
         },
-        columnId: taskModel.columnId,
       },
       include: {
         subtasks: true,
@@ -71,6 +73,7 @@ export class PrismaTaskRepository implements TaskRepository {
         title: taskModel.title,
         description: taskModel.description,
         status: taskModel.status,
+        updatedAt: taskModel.updatedAt,
         subtasks: {
           updateMany: taskModel.subtasks.map((subtask) => ({
             where: { id: subtask.id },

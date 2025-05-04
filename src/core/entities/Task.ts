@@ -4,10 +4,12 @@ export type TaskProperties = {
   id: string;
   title: string;
   description: string;
-  status: string;
   subtasks: Subtask[];
+  createdAt: Date;
+  updatedAt: Date;
 
-  columnId: string;
+  boardId: string;
+  status: string;
 };
 
 export class Task {
@@ -21,18 +23,20 @@ export class Task {
     id: string;
     title: string;
     description: string;
-    status: string;
     subtasks: Subtask[];
 
-    columnId: string;
+    boardId: string;
+    status: string;
   }) {
     return new Task({
       id: props.id,
       title: props.title,
       description: props.description,
-      status: props.status,
       subtasks: props.subtasks,
-      columnId: props.columnId,
+      boardId: props.boardId,
+      status: props.status,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
   }
 
@@ -46,6 +50,7 @@ export class Task {
     if (props.status) {
       this.props.status = props.status;
     }
+    this.props.updatedAt = new Date();
   }
 
   addSubtask(subtask: Subtask) {

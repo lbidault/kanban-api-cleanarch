@@ -3,12 +3,12 @@ import { Board } from "../entities/Board";
 import { InMemoryBoardRepository } from "./adapters/repositories/InMemoryBoardRepository";
 import { V4IdGateway } from "./adapters/gateways/V4IdGateway";
 import { Column } from "../entities/Column";
-import {  afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 
 const boardDb = new Map<string, Board>();
 
 describe("Unit - Get Board List", () => {
-  let boards: Board[] =  [];
+  let boards: Board[] = [];
   let getBoardList: GetBoardList;
   let boardRepository: InMemoryBoardRepository;
 
@@ -18,12 +18,13 @@ describe("Unit - Get Board List", () => {
     getBoardList = new GetBoardList(boardRepository);
 
     for (let i = 0; i < 5; i++) {
+      const boardId = idGateway.generate();
       const board = Board.create({
-        id: idGateway.generate(),
+        id: boardId,
         name: "Test Board",
         columns: [
-          Column.create({ id: idGateway.generate(), name: "Column 1" }),
-          Column.create({ id: idGateway.generate(), name: "Column 2" }),
+          Column.create({ boardId, name: "Column 1" }),
+          Column.create({ boardId, name: "Column 2" }),
         ],
       });
       boards.push(board);

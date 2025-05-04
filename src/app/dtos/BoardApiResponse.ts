@@ -5,7 +5,6 @@ export type BoardApiResponse = {
   id: string;
   name: string;
   columns: {
-    id: string;
     name: string;
     tasks: {
       id: string;
@@ -35,7 +34,6 @@ export class BoardApiResponseMapper implements Mapper<BoardApiResponse, Board> {
       id: board.props.id,
       name: board.props.name,
       columns: board.props.columns.map((column) => ({
-        id: column.props.id,
         name: column.props.name,
         tasks: column.props.tasks.map((task) => ({
           id: task.props.id,

@@ -36,6 +36,17 @@ describe("Unit - Delete Task", () => {
     taskRepository = new InMemoryTaskRepository(taskDb);
     deleteTask = new DeleteTask(taskRepository);
 
+    const boardId = idGateway.generate();
+    board = Board.create({
+      id: boardId,
+      name: "Test Board",
+      columns: [
+        Column.create({ boardId, name: "Todo" }),
+        Column.create({ boardId, name: "Doing" }),
+        Column.create({ boardId, name: "Done" }),
+      ],
+    });
+
     task = Task.create({
       id: idGateway.generate(),
       title: "Test Task",
@@ -45,17 +56,7 @@ describe("Unit - Delete Task", () => {
         Subtask.create({ id: idGateway.generate(), title: "Todo 1" }),
         Subtask.create({ id: idGateway.generate(), title: "Todo 2" }),
       ],
-      columnId: idGateway.generate(),
-    });
-
-    board = Board.create({
-      id: idGateway.generate(),
-      name: "Test Board",
-      columns: [
-        Column.create({ id: idGateway.generate(), name: "Todo" }),
-        Column.create({ id: idGateway.generate(), name: "Doing" }),
-        Column.create({ id: idGateway.generate(), name: "Done" }),
-      ],
+      boardId: board.props.id,
     });
     await boardRepository.create(board);
   });

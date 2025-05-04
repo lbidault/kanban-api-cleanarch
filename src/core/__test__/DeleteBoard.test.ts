@@ -18,12 +18,13 @@ describe("Unit - Delete Board", () => {
     boardRepository = new InMemoryBoardRepository(boardDb);
     deleteBoard = new DeleteBoard(boardRepository);
 
+    const boardId = idGateway.generate();
     board = Board.create({
-      id: idGateway.generate(),
+      id: boardId,
       name: "Test Board",
       columns: [
-        Column.create({ id: idGateway.generate(), name: "Column 1" }),
-        Column.create({ id: idGateway.generate(), name: "Column 2" }),
+        Column.create({ boardId, name: "Column 1" }),
+        Column.create({ boardId, name: "Column 2" }),
       ],
     });
   });

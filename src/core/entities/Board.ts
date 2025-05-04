@@ -43,16 +43,16 @@ export class Board {
     this.props.updatedAt = new Date();
   }
 
-  removeColumn(columnId: string) {
+  removeColumn(columnName: string) {
     this.props.columns = this.props.columns.filter(
-      (column) => column.props.id !== columnId
+      (column) => column.props.name !== columnName
     );
     this.props.updatedAt = new Date();
   }
 
-  moveTask(taskId: string, sourceColumnId: string, targetColumnId: string) {
-    const sourceColumn = this.props.columns.find(c => c.props.id === sourceColumnId);
-    const targetColumn = this.props.columns.find(c => c.props.id === targetColumnId);
+  moveTask(taskId: string, sourceColumnName: string, targetColumnName: string) {
+    const sourceColumn = this.props.columns.find(c => c.props.name === sourceColumnName);
+    const targetColumn = this.props.columns.find(c => c.props.name === targetColumnName);
   
     if (!sourceColumn || !targetColumn) {
       throw new ColumnErrors.NotFound();

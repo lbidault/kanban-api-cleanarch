@@ -54,12 +54,15 @@ export class UpdateTask implements UseCase<UpdateTaskInput, Task> {
       }
 
       existingTask.update({ status });
+      // existingBoard.moveTask(existingTask.props.id, existingTask.props.columnId, existingColumn.props.id);
+      
       // TODO: Update column
       console.warn("UpdateTask Implementation not complete : Update column");
     }
 
 
     await this.taskRepository.update(existingTask);
+    await this.boardRepository.update(existingBoard);
 
     return existingTask;
   }

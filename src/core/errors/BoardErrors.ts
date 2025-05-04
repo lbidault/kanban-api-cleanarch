@@ -18,4 +18,10 @@ export namespace BoardErrors {
       super("BOARD_INVALID_NAME");
     }
   }
+
+  export class PersistenceFailed extends DomainErrors {
+    constructor() {
+      super("BOARD_PERSISTENCE_FAILED");
+    }
+  }
 }

@@ -32,12 +32,13 @@ describe("API endpoints - /boards", function () {
     taskRepository = new PrismaTaskRepository();
 
     for (let i = 0; i < 5; i++) {
+      const boardId = idGateway.generate();
       const board = Board.create({
-        id: idGateway.generate(),
+        id: boardId,
         name: `Test Board ${i}`,
         columns: [
-          Column.create({ id: idGateway.generate(), name: "Todo" }),
-          Column.create({ id: idGateway.generate(), name: "Doing" }),
+          Column.create({ boardId, name: "Todo" }),
+          Column.create({ boardId, name: "Doing" }),
         ],
       });
       boardSamples.push(board);
@@ -48,12 +49,12 @@ describe("API endpoints - /boards", function () {
         id: idGateway.generate(),
         title: `Test Task ${i}`,
         description: "Test Description",
+        boardId: boardSamples[0].props.id,
         status: boardSamples[0].props.columns[0].props.name,
         subtasks: [
           Subtask.create({ id: idGateway.generate(), title: "Todo 1" }),
           Subtask.create({ id: idGateway.generate(), title: "Todo 2" }),
         ],
-        columnId: boardSamples[0].props.columns[0].props.id,
       });
       taskSamples.push(task);
     }

@@ -18,12 +18,13 @@ describe("Unit - Create Board", () => {
     boardRepository = new InMemoryBoardRepository(boardDb);
     createBoard = new CreateBoard(boardRepository, idGateway);
 
+    const boardId = idGateway.generate();
     board = Board.create({
-      id: idGateway.generate(),
+      id: boardId,
       name: "Test Board",
       columns: [
-        Column.create({ id: idGateway.generate(), name: "Column 1" }),
-        Column.create({ id: idGateway.generate(), name: "Column 2" }),
+        Column.create({ boardId, name: "Column 1" }),
+        Column.create({ boardId, name: "Column 2" }),
       ],
     });
   });

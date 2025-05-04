@@ -19,7 +19,6 @@ export class PrismaBoardRepository implements BoardRepository {
         updatedAt: new Date(),
         columns: {
           create: boardModel.columns.map((column) => ({
-            id: column.id,
             name: column.name,
           })),
         },
@@ -113,20 +112,19 @@ export class PrismaBoardRepository implements BoardRepository {
     await prisma.column.deleteMany({
       where: {
         boardId: boardModel.id,
-        id: {
-          notIn: boardModel.columns.map((c) => c.id),
+        name: {
+          notIn: boardModel.columns.map((c) => c.name),
         },
       },
     });
 
     for (const column of boardModel.columns) {
       await prisma.column.upsert({
-        where: { id: column.id },
+        where: { boardId_name: { boardId: column.boardId, name: column.name } },
         update: { name: column.name },
         create: {
-          id: column.id,
           name: column.name,
-          boardId: boardModel.id,
+          boardId: column.boardId,
         },
       });
     }
@@ -136,7 +134,7 @@ export class PrismaBoardRepository implements BoardRepository {
         for (const task of column.tasks) {
           await prisma.task.update({
             where: { id: task.id },
-            data: { columnId: column.id },
+            data: { status: column.name },
           });
         }
       }

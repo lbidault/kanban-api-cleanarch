@@ -1,7 +1,7 @@
 import { Task } from "./Task";
 
 export type ColumnProperties = {
-  id: string;
+  boardId: string;
   name: string;
   tasks: Task[];
 };
@@ -13,9 +13,9 @@ export class Column {
     this.props = props;
   }
 
-  static create(props: { id: string; name: string }) {
+  static create(props: { boardId: string; name: string }) {
     return new Column({
-      id: props.id,
+      boardId: props.boardId,
       name: props.name,
       tasks: [],
     });
@@ -29,9 +29,9 @@ export class Column {
     this.props.tasks.push(task);
   }
 
-  removeTask(taskId: string) {
+  removeTask(taskboardId: string) {
     this.props.tasks = this.props.tasks.filter(
-      (task) => task.props.id !== taskId
+      (task) => task.props.boardId !== taskboardId
     );
   }
 }

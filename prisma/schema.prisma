@@ -9,30 +9,36 @@ datasource db {
 
 model Board {
   id        String   @id @default(uuid())
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String   @unique
-  columns   Column[]
+
+  columns Column[]
 }
 
 model Column {
-  id    String @id @default(uuid())
-  name  String
+  name    String
+  boardId String
+
+  board Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
   tasks Task[]
 
-  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  boardId String
+  @@id([boardId, name]) // 👈 composite key
 }
 
 model Task {
-  id          String    @id @default(uuid())
-  title       String    @unique
+  id          String @id @default(uuid())
+  title       String @unique
   description String
-  status      String
-  subtasks    Subtask[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  column   Column @relation(fields: [columnId], references: [id], onDelete: Cascade)
-  columnId String
+  status  String // 👈 column name
+  boardId String
+
+  column Column @relation(fields: [boardId, status], references: [boardId, name], onDelete: Cascade)
+
+  subtasks Subtask[]
 }
 
 model Subtask {

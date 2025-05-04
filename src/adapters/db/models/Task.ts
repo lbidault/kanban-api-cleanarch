@@ -5,7 +5,9 @@ export type TaskModel = {
   title: string;
   description: string;
   subtasks: SubtaskModel[];
-  status: string;
+  createdAt: Date;
+  updatedAt: Date;
 
-  columnId: string;
+  boardId: string;
+  status: string;
 };

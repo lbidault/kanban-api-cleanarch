@@ -34,6 +34,17 @@ describe("Unit - Create Task", () => {
     taskRepository = new InMemoryTaskRepository(taskDb);
     createTask = new CreateTask(boardRepository, taskRepository, idGateway);
 
+    const boardId = idGateway.generate();
+    board = Board.create({
+      id: boardId,
+      name: "Test Board",
+      columns: [
+        Column.create({ boardId, name: "Todo" }),
+        Column.create({ boardId, name: "Doing" }),
+        Column.create({ boardId, name: "Done" }),
+      ],
+    });
+
     task = Task.create({
       id: idGateway.generate(),
       title: "Test Task",
@@ -43,18 +54,9 @@ describe("Unit - Create Task", () => {
         Subtask.create({ id: idGateway.generate(), title: "Todo 1" }),
         Subtask.create({ id: idGateway.generate(), title: "Todo 2" }),
       ],
-      columnId: idGateway.generate(),
+      boardId: board.props.id,
     });
 
-    board = Board.create({
-      id: idGateway.generate(),
-      name: "Test Board",
-      columns: [
-        Column.create({ id: idGateway.generate(), name: "Todo" }),
-        Column.create({ id: idGateway.generate(), name: "Doing" }),
-        Column.create({ id: idGateway.generate(), name: "Done" }),
-      ],
-    });
     await boardRepository.create(board);
   });
 

@@ -10,14 +10,16 @@ export class PrismaTaskMapper implements Mapper<TaskModel, Task> {
       id: data.props.id,
       title: data.props.title,
       description: data.props.description,
-      status: data.props.status,
+      createdAt: data.props.createdAt,
+      updatedAt: data.props.updatedAt,
       subtasks: data.props.subtasks.map((subtask) => ({
         id: subtask.props.id,
         taskId: data.props.id,
         title: subtask.props.title,
         isCompleted: subtask.props.isCompleted,
       })),
-      columnId: data.props.columnId,
+      boardId: data.props.boardId,
+      status: data.props.status,
     };
   }
 
@@ -26,7 +28,8 @@ export class PrismaTaskMapper implements Mapper<TaskModel, Task> {
       id: raw.id,
       title: raw.title,
       description: raw.description,
-      status: raw.status,
+      createdAt: raw.createdAt,
+      updatedAt: raw.updatedAt,
       subtasks: raw.subtasks.map(
         (subtaskModel: SubtaskModel) =>
           new Subtask({
@@ -35,7 +38,8 @@ export class PrismaTaskMapper implements Mapper<TaskModel, Task> {
             isCompleted: subtaskModel.isCompleted,
           })
       ),
-      columnId: raw.columnId,
+      boardId: raw.boardId,
+      status: raw.status,
     });
   }
 }

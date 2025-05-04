@@ -138,7 +138,7 @@ boardRouter.delete("/:boardId/tasks/:taskId", async (req, res) => {
 
 boardRouter.patch("/:boardId/tasks/:taskId", async (req, res) => {
   const { boardId, taskId } = req.params;
-  const { subtasks } = req.body;
+  const { subtasks, status } = req.body;
 
   try {
     const task = await updateTask.execute({
