@@ -26,6 +26,40 @@ const getBoard = new GetBoard(boardRepository);
 const deleteBoard = new DeleteBoard(boardRepository);
 const createTask = new CreateTask(boardRepository, taskRepository, idGateway);
 
+/**
+ * @swagger
+ * /boards:
+ *   post:
+ *     summary: Create a new board
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - columns
+ *             properties:
+ *               name:
+ *                 type: string
+ *               columns:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *     responses:
+ *       201:
+ *         description: Board created successfully
+ *       401:
+ *         description: Invalid Name
+ *       409:
+ *         description: Name Already Exists
+ *       500:
+ *         description: Internal Server Error
+ */
 boardRouter.post("/", async (req, res) => {
   const { name, columns }: CreateBoardInput = req.body;
 
@@ -44,6 +78,17 @@ boardRouter.post("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /boards:
+ *   get:
+ *     summary: Get all boards
+ *     responses:
+ *       200:
+ *         description: List of boards
+ *       500:
+ *         description: Internal Server Error
+ */
 boardRouter.get("/", async (req, res) => {
   try {
     const boards = await getBoardList.execute();
@@ -54,6 +99,25 @@ boardRouter.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /boards/{boardId}:
+ *   get:
+ *     summary: Get a board by ID
+ *     parameters:
+ *       - in: path
+ *         name: boardId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Board found
+ *       404:
+ *         description: Board Not Found
+ *       500:
+ *         description: Internal Server Error
+ */
 boardRouter.get("/:boardId", async (req, res) => {
   const { boardId } = req.params;
 
@@ -70,6 +134,25 @@ boardRouter.get("/:boardId", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /boards/{boardId}:
+ *   delete:
+ *     summary: Delete a board by ID
+ *     parameters:
+ *       - in: path
+ *         name: boardId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Board deleted
+ *       404:
+ *         description: Board Not Found
+ *       500:
+ *         description: Internal Server Error
+ */
 boardRouter.delete("/:boardId", async (req, res) => {
   const { boardId } = req.params;
 
@@ -86,6 +169,55 @@ boardRouter.delete("/:boardId", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /boards/{boardId}/tasks:
+ *   post:
+ *     summary: Create a task in a board
+ *     parameters:
+ *       - in: path
+ *         name: boardId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *               - status
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *               subtasks:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     title:
+ *                       type: string
+ *                     isCompleted:
+ *                       type: boolean
+ *     responses:
+ *       201:
+ *         description: Task created
+ *       401:
+ *         description: Invalid Name
+ *       404:
+ *         description: Board or column not found
+ *       409:
+ *         description: Title Already Exists
+ *       500:
+ *         description: Internal Server Error
+ */
 boardRouter.post("/:boardId/tasks", async (req, res) => {
   const { boardId } = req.params;
   const { title, description, subtasks, status } = req.body;

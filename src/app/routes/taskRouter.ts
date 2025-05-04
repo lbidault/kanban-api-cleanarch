@@ -13,6 +13,25 @@ const taskApiResponseMapper = new TaskApiResponseMapper();
 const deleteTask = new DeleteTask(taskRepository);
 const updateSubtask = new UpdateSubtask(taskRepository);
 
+/**
+ * @swagger
+ * /tasks/{taskId}:
+ *   delete:
+ *     summary: Delete a task by ID
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Task deleted successfully
+ *       404:
+ *         description: Task Not Found
+ *       500:
+ *         description: Internal Server Error
+ */
 taskRouter.delete("/:taskId", async (req, res) => {
   const { taskId } = req.params;
 
@@ -29,6 +48,30 @@ taskRouter.delete("/:taskId", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /tasks/{taskId}/subtasks/{subtaskId}:
+ *   patch:
+ *     summary: Toggle a subtask's completion state
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: subtaskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Task updated with toggled subtask
+ *       404:
+ *         description: Task or Subtask Not Found
+ *       500:
+ *         description: Internal Server Error
+ */
 taskRouter.patch("/:taskId/subtasks/:subtaskId", async (req, res) => {
   const { taskId, subtaskId } = req.params;
 
