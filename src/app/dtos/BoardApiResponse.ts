@@ -11,6 +11,7 @@ export type BoardApiResponse = {
       status: string;
       title: string;
       description: string;
+      updatedAt: Date;
       subtasks: {
         id: string;
         title: string;
@@ -40,6 +41,7 @@ export class BoardApiResponseMapper implements Mapper<BoardApiResponse, Board> {
           status: task.props.status,
           title: task.props.title,
           description: task.props.description,
+          updatedAt: task.props.updatedAt,
           subtasks: task.props.subtasks.map((subtask) => ({
             id: subtask.props.id,
             title: subtask.props.title,
