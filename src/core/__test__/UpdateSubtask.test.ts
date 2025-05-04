@@ -72,7 +72,7 @@ describe("Unit - Update Subtask", () => {
   it("should update subtasks status", async () => {
     const input = {
       taskId: task.props.id,
-      subtasks: [task.props.subtasks[0].props.id],
+      subtaskId: task.props.subtasks[0].props.id,
     };
 
     expect(task.props.subtasks[0].props.isCompleted).toBe(false);
@@ -88,9 +88,8 @@ describe("Unit - Update Subtask", () => {
 
   it("should come back to initial subtask status", async () => {
     const input = {
-      boardId: board.props.id,
       taskId: task.props.id,
-      subtasks: [task.props.subtasks[0].props.id],
+      subtaskId: task.props.subtasks[0].props.id,
     };
 
     expect(task.props.subtasks[0].props.isCompleted).toBe(false);

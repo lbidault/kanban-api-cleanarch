@@ -2,7 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
-import { boardRouter } from "./app/routes/board";
+import { boardRouter } from "./app/routes/boardRouter";
+import { taskRouter } from "./app/routes/taskRouter";
 import cors from "cors";
 
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/boards", boardRouter);
+app.use("/tasks", taskRouter);
 
 // app.post(`/signup`, async (req, res) => {
 //   const { name, email, posts } = req.body;

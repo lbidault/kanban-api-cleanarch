@@ -12,9 +12,6 @@ import { DeleteBoard } from "../../core/usecases/DeleteBoard";
 import { BoardErrors } from "../../core/errors/BoardErrors";
 import { ColumnErrors } from "../../core/errors/ColumnErrors";
 import { TaskErrors } from "../../core/errors/TaskErrors";
-import { DeleteTask } from "../../core/usecases/DeleteTask";
-import { UpdateTask } from "../../core/usecases/UpdateTask";
-import { SubtaskErrors } from "../../core/errors/SubtaskErrors";
 
 const boardRouter = Router();
 const boardRepository = new PrismaBoardRepository();
@@ -28,8 +25,6 @@ const getBoardList = new GetBoardList(boardRepository);
 const getBoard = new GetBoard(boardRepository);
 const deleteBoard = new DeleteBoard(boardRepository);
 const createTask = new CreateTask(boardRepository, taskRepository, idGateway);
-const deleteTask = new DeleteTask(taskRepository);
-const updateTask = new UpdateTask(boardRepository, taskRepository);
 
 boardRouter.post("/", async (req, res) => {
   const { name, columns }: CreateBoardInput = req.body;
@@ -113,49 +108,6 @@ boardRouter.post("/:boardId/tasks", async (req, res) => {
       res.status(404).json({ message: "Board Not Found" });
     } else if (error instanceof ColumnErrors.NotFound) {
       res.status(404).json({ message: "Invalid Status Name" });
-    } else {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-});
-
-boardRouter.delete("/:boardId/tasks/:taskId", async (req, res) => {
-  const { taskId } = req.params;
-
-  try {
-    await deleteTask.execute({ id: taskId });
-    res.status(204).json();
-  } catch (error) {
-    if (error instanceof TaskErrors.NotFound) {
-      res.status(404).json({ message: "Task Not Found" });
-    } else {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-});
-
-boardRouter.patch("/:boardId/tasks/:taskId", async (req, res) => {
-  const { boardId, taskId } = req.params;
-  const { subtasks, status } = req.body;
-
-  try {
-    const task = await updateTask.execute({
-      boardId,
-      taskId,
-      subtasks,
-    });
-    res.status(200).json(taskApiResponseMapper.fromDomain(task));
-  } catch (error) {
-    if (error instanceof TaskErrors.NotFound) {
-      res.status(404).json({ message: "Task Not Found" });
-    } else if (error instanceof BoardErrors.NotFound) {
-      res.status(404).json({ message: "Board Not Found" });
-    } else if (error instanceof ColumnErrors.NotFound) {
-      res.status(404).json({ message: "Column Not Found" });
-    } else if (error instanceof SubtaskErrors.NotFound) {
-      res.status(404).json({ message: "Subtask Not Found" });
     } else {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });

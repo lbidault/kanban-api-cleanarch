@@ -6,7 +6,7 @@ import { SubtaskErrors } from "../errors/SubtaskErrors";
 
 export interface UpdateSubtaskInput {
   taskId: string;
-  subtasks: string[];
+  subtaskId: string;
 }
 
 export class UpdateSubtask implements UseCase<UpdateSubtaskInput, Task> {
@@ -15,23 +15,20 @@ export class UpdateSubtask implements UseCase<UpdateSubtaskInput, Task> {
   ) {}
 
   async execute(input: UpdateSubtaskInput): Promise<Task> {
-    const { taskId, subtasks } = input;
+    const { taskId, subtaskId } = input;
 
     const existingTask = await this.taskRepository.findById(taskId);
     if (!existingTask) {
       throw new TaskErrors.NotFound();
     }
 
-    // subtasks
-    subtasks.forEach((subtaskId) => {
-      const existingSubtask = existingTask.props.subtasks.find(
-        (sub) => sub.props.id === subtaskId
-      );
-      if (!existingSubtask) {
-        throw new SubtaskErrors.NotFound();
-      }
-      existingSubtask.toggle();
-    });
+    const existingSubtask = existingTask.props.subtasks.find(
+      (sub) => sub.props.id === subtaskId
+    );
+    if (!existingSubtask) {
+      throw new SubtaskErrors.NotFound();
+    }
+    existingSubtask.toggle();
 
     await this.taskRepository.update(existingTask);
 
