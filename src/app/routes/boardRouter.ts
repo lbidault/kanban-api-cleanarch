@@ -12,6 +12,7 @@ import { DeleteBoard } from "../../core/usecases/DeleteBoard";
 import { BoardErrors } from "../../core/errors/BoardErrors";
 import { ColumnErrors } from "../../core/errors/ColumnErrors";
 import { TaskErrors } from "../../core/errors/TaskErrors";
+import { UpdateTaskStatus } from "../../core/usecases/UpdateTaskStatus";
 
 const boardRouter = Router();
 const boardRepository = new PrismaBoardRepository();
@@ -25,6 +26,7 @@ const getBoardList = new GetBoardList(boardRepository);
 const getBoard = new GetBoard(boardRepository);
 const deleteBoard = new DeleteBoard(boardRepository);
 const createTask = new CreateTask(boardRepository, taskRepository, idGateway);
+const updateTaskStatus = new UpdateTaskStatus(boardRepository, taskRepository);
 
 /**
  * @swagger
@@ -240,6 +242,62 @@ boardRouter.post("/:boardId/tasks", async (req, res) => {
       res.status(404).json({ message: "Board Not Found" });
     } else if (error instanceof ColumnErrors.NotFound) {
       res.status(404).json({ message: "Invalid Status Name" });
+    } else {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+});
+
+/**
+ * @swagger
+ * /boards/{boardId}/tasks/{taskId}:
+ *   patch:
+ *     summary: Update a task's status (move to another column)
+ *     parameters:
+ *       - in: path
+ *         name: boardId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Task status updated
+ *       404:
+ *         description: Board, Task or Column Not Found
+ *       500:
+ *         description: Internal Server Error
+ */
+boardRouter.patch("/:boardId/tasks/:taskId", async (req, res) => {
+  const { boardId, taskId } = req.params;
+  const { status } = req.body;
+
+  try {
+    const task = await updateTaskStatus.execute({ boardId, taskId, status });
+    res.status(200).json(taskApiResponseMapper.fromDomain(task));
+  } catch (error) {
+    if (error instanceof TaskErrors.NotFound) {
+      res.status(404).json({ message: "Task Not Found" });
+    } else if (error instanceof BoardErrors.NotFound) {
+      res.status(404).json({ message: "Board Not Found" });
+    } else if (error instanceof ColumnErrors.NotFound) {
+      res.status(404).json({ message: "Column Not Found" });
     } else {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });

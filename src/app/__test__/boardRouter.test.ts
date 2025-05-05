@@ -16,6 +16,7 @@ import { Board } from "../../core/entities/Board";
 import { Column } from "../../core/entities/Column";
 import { Task } from "../../core/entities/Task";
 import { Subtask } from "../../core/entities/Subtask";
+import { PrismaTaskRepository } from "../../adapters/db/repositories/PrismaTaskRepository";
 
 const app = express();
 
@@ -23,10 +24,12 @@ describe("API endpoints - /boards", function () {
   let boardSamples: Board[] = [];
   let boardRepository: PrismaBoardRepository;
   let taskSamples: Task[] = [];
+  let taskRepository: PrismaTaskRepository;
 
   beforeAll(async () => {
     const idGateway = new V4IdGateway();
     boardRepository = new PrismaBoardRepository();
+    taskRepository = new PrismaTaskRepository();
 
     for (let i = 0; i < 5; i++) {
       const boardId = idGateway.generate();
@@ -150,4 +153,20 @@ describe("API endpoints - /boards", function () {
       .expect(201);
   });
 
+  it("PATCH /boards/:boardId/tasks/:taskId - should update task status", async () => {
+    const board = boardSamples[0];
+    await boardRepository.create(board);
+    const task = taskSamples[0];
+    await taskRepository.create(task);
+
+    await request(app)
+      .patch(`/boards/${board.props.id}/tasks/${task.props.id}`)
+      .send({ status: board.props.columns[1].props.name })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect((res) => {
+        expect(res.body.status).toEqual(board.props.columns[1].props.name);
+      })
+      .expect(200);
+  });
 });

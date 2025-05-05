@@ -18,7 +18,7 @@ The backend is structured around **Clean Architecture**, ensuring strong separat
 
 - The `core/` folder contains all pure domain logic: entities like `Task`, `Board`, and use cases like `createTask` or `getBoard`.
 - `adapters/` bridges the domain to infrastructure, handling data persistence via Prisma which plays a central role in modeling and accessing relational data.
-- `app/` exposes the API through Express, mapping domain results to HTTP responses. It's also where Swagger documentation and validation live.
+- `app/` exposes the API through Express, mapping domain results to HTTP responses.
 
 
 ## Implementation status

@@ -73,13 +73,41 @@ describe("API endpoints - /tasks", function () {
     await prisma.board.deleteMany();
   });
 
+  it("GET /tasks/:taskId - should return a task", async () => {
+    const board = boardSamples[0];
+    await boardRepository.create(board);
+    const task = taskSamples[0];
+    await taskRepository.create(task);
+
+    await request(app)
+      .get(`/tasks/${task.props.id}`)
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect((res) => {
+        expect(res.body).toEqual(
+          expect.objectContaining({
+            id: task.props.id,
+            title: task.props.title,
+            description: task.props.description,
+            status: task.props.status,
+            subtasks: [
+              expect.objectContaining({ title: "Todo 1" }),
+              expect.objectContaining({ title: "Todo 2" }),
+            ],
+          })
+        );
+      })
+      .expect(200);
+  });
+
   it("DELETE /tasks/:taskId - should delete a task", async () => {
     const board = boardSamples[0];
     await boardRepository.create(board);
     const task = taskSamples[0];
     await taskRepository.create(task);
-    // console.log("DELETE task", task, `/tasks/${task.props.id}`);
+
     await request(app).delete(`/tasks/${task.props.id}`).expect(204);
+    await request(app).get(`/tasks/${task.props.id}`).expect(404);
   });
 
   it("PATCH /tasks/:taskId/subtasks/:subtaskId - should update task's subtasks", async () => {
