@@ -19,9 +19,9 @@ export namespace BoardErrors {
     }
   }
 
-  export class PersistenceFailed extends DomainErrors {
+  export class DuplicateColumnName extends DomainErrors {
     constructor() {
-      super("BOARD_PERSISTENCE_FAILED");
+      super("DUPLICATE_COLUMN_NAME");
     }
   }
 }

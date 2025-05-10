@@ -28,6 +28,12 @@ export class CreateBoard implements UseCase<CreateBoardInput, Board> {
       throw new BoardErrors.NameAlreadyExists();
     }
 
+    // Vérifie les doublons dans les noms de colonnes
+    const uniqueNames = new Set(columns);
+    if (uniqueNames.size !== columns.length) {
+      throw new BoardErrors.DuplicateColumnName();
+    }
+
     const boardId = this.idGateway.generate();
     const board = Board.create({
       id: boardId,

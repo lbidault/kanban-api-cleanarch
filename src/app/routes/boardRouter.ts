@@ -8,6 +8,7 @@ import { BoardApiResponseMapper } from "../dtos/BoardApiResponse";
 import { TaskApiResponseMapper } from "../dtos/TaskApiResponse";
 import { GetBoardList } from "../../core/usecases/GetBoardList";
 import { GetBoard } from "../../core/usecases/GetBoard";
+import { EditBoard } from "../../core/usecases/EditBoard";
 import { DeleteBoard } from "../../core/usecases/DeleteBoard";
 import { BoardErrors } from "../../core/errors/BoardErrors";
 import { ColumnErrors } from "../../core/errors/ColumnErrors";
@@ -24,6 +25,7 @@ const idGateway = new V4IdGateway();
 const createBoard = new CreateBoard(boardRepository, idGateway);
 const getBoardList = new GetBoardList(boardRepository);
 const getBoard = new GetBoard(boardRepository);
+const editBoard = new EditBoard(boardRepository);
 const deleteBoard = new DeleteBoard(boardRepository);
 const createTask = new CreateTask(boardRepository, taskRepository, idGateway);
 const updateTaskStatus = new UpdateTaskStatus(boardRepository, taskRepository);
@@ -45,20 +47,61 @@ const updateTaskStatus = new UpdateTaskStatus(boardRepository, taskRepository);
  *             properties:
  *               name:
  *                 type: string
+ *                 example: "Project Board"
  *               columns:
  *                 type: array
  *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
+ *                   type: string
+ *                 example: ["Todo", "Doing", "Done"]
  *     responses:
  *       201:
  *         description: Board created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 columns:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *       400:
+ *         description: Duplicate Column Name
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Duplicate Column Name
  *       401:
  *         description: Invalid Name
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid Name
  *       409:
  *         description: Name Already Exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Name Already Exists
  *       500:
  *         description: Internal Server Error
  */
@@ -73,6 +116,8 @@ boardRouter.post("/", async (req, res) => {
       res.status(401).json({ message: "Invalid Name" });
     } else if (error instanceof BoardErrors.NameAlreadyExists) {
       res.status(409).json({ message: "Name Already Exists" });
+    } else if (error instanceof BoardErrors.DuplicateColumnName) {
+      res.status(400).json({ message: "Duplicate Column Name" });
     } else {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
@@ -129,6 +174,129 @@ boardRouter.get("/:boardId", async (req, res) => {
   } catch (error) {
     if (error instanceof BoardErrors.NotFound) {
       res.status(404).json({ message: "Board Not Found" });
+    } else {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+});
+
+/**
+ * @swagger
+ * /boards/{boardId}:
+ *   put:
+ *     summary: Update a board's name and its columns
+ *     parameters:
+ *       - in: path
+ *         name: boardId
+ *         required: true
+ *         description: ID of the board to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - columns
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "New Board Name"
+ *               columns:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - name
+ *                   properties:
+ *                     id:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: "Todo"
+ *                     name:
+ *                       type: string
+ *                       example: "Updated Column Name"
+ *     responses:
+ *       200:
+ *         description: Board updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "board-123"
+ *                 name:
+ *                   type: string
+ *                   example: "Updated Board"
+ *                 columns:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: "In Progress"
+ *       400:
+ *         description: Invalid input (e.g. name too short, column errors, duplicates)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Duplicate Column Name"
+ *       404:
+ *         description: Board not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Board Not Found"
+ *       409:
+ *         description: Board name already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Board Name Already Exists"
+ *       500:
+ *         description: Internal Server Error
+ */
+boardRouter.put("/:boardId", async (req, res) => {
+  const { boardId } = req.params;
+  const { name, columns } = req.body;
+
+  try {
+    const board = await editBoard.execute({ id: boardId, name, columns });
+    res.status(200).json(boardApiResponseMapper.fromDomain(board));
+  } catch (error) {
+    if (error instanceof BoardErrors.NotFound) {
+      res.status(404).json({ message: "Board Not Found" });
+    } else if (error instanceof BoardErrors.NameAlreadyExists) {
+      res.status(409).json({ message: "Board Name Already Exists" });
+    } else if (error instanceof BoardErrors.InvalidName) {
+      res.status(400).json({ message: "Board Invalide Name" });
+    } else if (error instanceof BoardErrors.DuplicateColumnName) {
+      res.status(400).json({ message: "Duplicate Column Name" });
+    } else if (error instanceof BoardErrors.NotFound) {
+      res.status(404).json({ message: "Board Not Found" });
+    } else if (error instanceof ColumnErrors.InvalidName) {
+      res.status(400).json({ message: "Column Invalid Name" });
     } else {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });

@@ -39,6 +39,7 @@ describe("API endpoints - /boards", function () {
         columns: [
           Column.create({ boardId, name: "Todo" }),
           Column.create({ boardId, name: "Doing" }),
+          Column.create({ boardId, name: "Done" }),
         ],
       });
       boardSamples.push(board);
@@ -118,6 +119,67 @@ describe("API endpoints - /boards", function () {
     expect(foundBoard.columns.length).toEqual(board.props.columns.length);
     expect(foundBoard.columns[0].tasks).toBeInstanceOf(Array);
   });
+
+  it("PUT /boards/:boardId - should edit board's name and its columns", async () => {
+    const board = boardSamples[0];
+    await boardRepository.create(board);
+    const [col1, _, col3] = board.props.columns;
+
+    await request(app)
+      .put(`/boards/${board.props.id}`)
+      .send({
+        name: "Testing Update",
+        columns: [
+          {
+            id: {
+              name: col1.props.name,
+            },
+            name: "Tochange",
+          },
+          {
+            id: {
+              name: col3.props.name,
+            },
+            name: col3.props.name,
+          },
+          {
+            name: "New Column",
+          },
+        ],
+      })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect((res) => {
+        expect(res.body.name).toEqual("Testing Update");
+
+        const columnNames = res.body.columns.map((col: any) => col.name);
+        expect(columnNames).toEqual(
+          expect.arrayContaining(["Tochange", "Done", "New Column"])
+        );
+        expect(columnNames).not.toContain("Doing");
+      })
+      .expect(200);
+  });
+
+  it("PUT /boards/:boardId - should return 400 if column names are duplicated", async () => {
+    const board = boardSamples[0];
+    await boardRepository.create(board);
+  
+    await request(app)
+      .put(`/boards/${board.props.id}`)
+      .send({
+        name: "Valid Name",
+        columns: [
+          { name: "Duplicate" },
+          { name: "Duplicate" },
+        ],
+      })
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.message).toContain("Duplicate Column Name");
+      });
+  });
+  
 
   it("DELETE /boards/:boardId - should delete a board", async () => {
     const board = boardSamples[0];

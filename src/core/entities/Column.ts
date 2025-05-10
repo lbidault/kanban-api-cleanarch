@@ -21,8 +21,8 @@ export class Column {
     });
   }
 
-  update(name: string) {
-    this.props.name = name;
+  update(props: { name?: string }) {
+    if (props.name) this.props.name = props.name;
   }
 
   addTask(task: Task) {

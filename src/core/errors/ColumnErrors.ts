@@ -13,7 +13,7 @@ export namespace ColumnErrors {
     }
   }
 
-  export class InvalidNameError extends DomainErrors {
+  export class InvalidName extends DomainErrors {
     constructor() {
       super("COLUMN_INVALID_NAME");
     }
