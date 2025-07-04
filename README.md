@@ -8,7 +8,7 @@
 You can view the live app and interact with both the frontend and the API:
 
 - 🌐 Frontend: [https://kanban-client-chi.vercel.app](https://kanban-client-chi.vercel.app)
-- 📘 API Docs (Swagger): [https://kanban-api-cleanarch.onrender.com/docs](https://kanban-api-cleanarch.onrender.com/docs)
+- 📘 API Docs (Swagger): [https://kanban-api-cleanarch-v1.onrender.com/docs](https://kanban-api-cleanarch-v1.onrender.com/docs)
 
 ## Architecture
 
