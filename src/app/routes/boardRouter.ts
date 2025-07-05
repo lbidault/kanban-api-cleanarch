@@ -370,12 +370,7 @@ boardRouter.delete("/:boardId", async (req, res) => {
  *               subtasks:
  *                 type: array
  *                 items:
- *                   type: object
- *                   properties:
- *                     title:
- *                       type: string
- *                     isCompleted:
- *                       type: boolean
+ *                   type: string
  *     responses:
  *       201:
  *         description: Task created
