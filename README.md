@@ -28,7 +28,6 @@ The backend is structured around **Clean Architecture**, ensuring strong separat
 | Tasks: create, read, delete    | ✅ Done         |
 | Subtasks: update               | ✅ Done         |
 | Responsive: Main UI            | ✅ Done         |
-| Column changes (status)        | ✅ Done         |
 | Optimistic UI updates          | 🚧 In progress  |
 | Column changes (status)        | ✅ Done         |
 | Boards: update                 | 🚧 In progress  |
